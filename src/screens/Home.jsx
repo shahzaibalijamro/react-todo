@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useState } from "react";
-function App() {
+function Home() {
   const [todo,setTodo] = useState([]);
   const input = useRef();
   function addTodo(event) {
@@ -45,4 +45,4 @@ function App() {
   )
 }
 
-export default App;
+export default Home;
