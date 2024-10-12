@@ -86,7 +86,7 @@ function Home() {
           </form>
         </div>
         <div className="mt-10">
-          {todo.map((item, index) => {
+          {todo.length > 0 ? todo.map((item, index) => {
             return <div key={index} className="flex my-5 justify-between items-center">
               <h1 className="font-semibold text-center text-2xl">{item.title}</h1>
               <div className="flex items-center">
@@ -94,7 +94,7 @@ function Home() {
                 <i onClick={() => deleteTodo(index)} className="fa-solid text-lg cursor-pointer ml-5 fa-trash"></i>
               </div>
             </div>
-          })}
+          }) : <h1 className="text-center text-xl mt-20">Your added todos will appear here!</h1>}
         </div>
       </div>
     </>
