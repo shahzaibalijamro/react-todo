@@ -54,7 +54,7 @@ function Home() {
         <h1 className="font-semibold text-center mt-20 text-3xl">Todo App</h1>
         <div className="mt-10">
           <form onSubmit={addTodo} className="flex justify-center items-center">
-            <input type="text" placeholder="Type here" className="input w-full input-bordered w-full" ref={input} />
+            <input type="text" placeholder="Type here" className="input input-bordered w-full" ref={input} />
             <button className="btn ml-3 btn-neutral">Add Todo</button>
           </form>
         </div>
