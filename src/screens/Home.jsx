@@ -1,52 +1,79 @@
 import { useEffect, useRef } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { addDoc, collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useState } from "react";
 import { auth, db } from "../config/firebase/firebaseconfig";
 function Home() {
-  useEffect(()=>{
+  const [isUser, setIsUser] = useState(false);
+  useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log(user.email);
+        setIsUser(true)
         const userRef = collection(db, "todos");
         const q = query(userRef, where("uid", "==", user.uid));
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          setSetTodos(doc.data())
-        });
+        const myTodos = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          id: doc.id
+        }));
+        setTodo(myTodos)
       } else {
+        setIsUser(false)
         console.log("User is signed out.");
       }
     })
-  },[])
-  const [setTodos, setSetTodos] = useState([])
-  
+  }, [])
   const [todo, setTodo] = useState([]);
   const input = useRef();
   async function addTodo(event) {
     event.preventDefault();
-    todo.push(input.current.value);
-    setTodo([...todo]);
     try {
-      const docRef = await addDoc(collection(db, "todos"), {
-        title: input.current.value,
-        uid: auth.currentUser.uid
-      });
-      console.log("Document written with ID: ", docRef.id);
+      if (isUser) {
+        const docRef = await addDoc(collection(db, "todos"), {
+          title: input.current.value,
+          uid: auth.currentUser.uid
+        });
+        console.log("Document written with ID: ", docRef.id);
+        todo.push({
+          title: input.current.value,
+          uid: auth.currentUser.uid,
+          id: docRef.id
+        });
+        setTodo([...todo]);
+      } else {
+        todo.push({
+          title: input.current.value
+        });
+        setTodo([...todo]);
+      }
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-    console.log(todo);
     input.current.value = "";
   }
-  function editTodo(index) {
-    const edit = prompt("Enter the edit", todo[index]);
-    todo[index] = edit;
-    setTodo([...todo]);
+  async function editTodo(index) {
+    const edit = prompt("Enter the edit", todo[index].title);
+    if (isUser) {
+      const updateRef = doc(db, "todos", todo[index].id);
+      await updateDoc(updateRef, {
+        title: edit
+      });
+      todo[index].title = edit;
+      setTodo([...todo]);
+    } else {
+      todo[index].title = edit;
+      setTodo([...todo]);
+    }
   }
-  function deleteTodo(index) {
-    todo.splice(index, 1);
-    setTodo([...todo]);
+  async function deleteTodo(index) {
+    if (isUser) {
+      await deleteDoc(doc(db, "todos", todo[index].id));
+      todo.splice(index, 1);
+      setTodo([...todo]);
+    } else {
+      todo.splice(index, 1);
+      setTodo([...todo]);
+    }
   }
   return (
     <>
@@ -61,7 +88,7 @@ function Home() {
         <div className="mt-10">
           {todo.map((item, index) => {
             return <div key={index} className="flex my-5 justify-between items-center">
-              <h1 className="font-semibold text-center text-2xl">{item}</h1>
+              <h1 className="font-semibold text-center text-2xl">{item.title}</h1>
               <div className="flex items-center">
                 <i onClick={() => editTodo(index)} className="fa-solid text-lg cursor-pointer ml-3 fa-pen-to-square"></i>
                 <i onClick={() => deleteTodo(index)} className="fa-solid text-lg cursor-pointer ml-5 fa-trash"></i>

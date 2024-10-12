@@ -9,11 +9,9 @@ const Navbar = () => {
     const [setUser, setSetUser] = useState([])
     const currentPage = useLocation();
     const defaultPfp = `https://ui-avatars.com/api/?name=`
-    console.log(defaultPfp);
     useEffect(() => {
         currentPage.pathname === '/' ? onAuthStateChanged(auth, async (user) => {
             if (user) {
-                console.log(user.email);
                 const userRef = collection(db, "users");
                 const q = query(userRef, where("email", "==", user.email));
                 const querySnapshot = await getDocs(q);
@@ -44,9 +42,6 @@ const Navbar = () => {
                 <a className="btn btn-ghost text-xl">{setUser.name ? setUser.name : <h1>User</h1>}</a>
             </div>
             <div className="flex-none gap-2">
-                <div className="form-control">
-                    <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
-                </div>
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
