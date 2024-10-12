@@ -2,6 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const Navbar = () => {
+    const pfp = `https://ui-avatars.com/api/?name=Shahzaib+Ali`;
+    console.log(pfp);
     return (
         <div className="navbar bg-base-100 mt-3 max-w-[1300px] mx-auto">
             <div className="flex-1">
@@ -16,7 +18,7 @@ const Navbar = () => {
                         <div className="w-10 rounded-full">
                             <img
                                 alt="Tailwind CSS Navbar component"
-                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                src={pfp} />
                         </div>
                     </div>
                     <ul
